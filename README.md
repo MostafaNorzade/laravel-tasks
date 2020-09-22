@@ -29,12 +29,12 @@ We Tag the tasks as 'complete' until the end of the day:
 tempTags($task)->tagIt('complete', Carbon::tomorrow()->startOfDay());
 ```
 
-We un-Tag the tasks when the user marks as in-complete:
+We remove the tag from the task when the user marks it as in-complete:
 ```php
 tempTags($task)->unTag('complete');
 ```
 
-We fetch the Tasks like this:
+We fetch the 'complete' and 'incomplete' tasks like this:
 
 ```php
 Task::hasActiveTempTags('complete')->get();    // tasks which has tag
@@ -47,6 +47,7 @@ And that is all ! Super simple
 -----------
 
 ### Laravel Temp Tag:
+
 https://github.com/imanghafoori1/laravel-temp-tag
 
 
