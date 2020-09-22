@@ -1,17 +1,14 @@
 <?php
 
-// PUBLIC HOMEPAGE ROUTE
+// public homepage route
 Route::view('/', 'welcome');
 
-// INSTANTIATE AUTH ROUTING AND ESTABLISH LOGOUT ROUTE
+// instantiate auth routing and establish logout route
 Auth::routes();
 Route::get('/logout', 'Auth\LoginController@logout');
 
-// USER HOMEPAGE ROUTE
+// user homepage route
 Route::get('/home', 'HomeController@index');
 
-// USER TASKS ROUTES
+// user tasks routes
 Route::resource('/tasks', 'TasksController');
-Route::get('/tasks-all', 'TasksController@index_all');
-Route::get('/tasks-complete', 'TasksController@index_complete');
-Route::get('/tasks-incomplete', 'TasksController@index_incomplete');

@@ -40,7 +40,7 @@
                                 <div class="col-sm-6">
                                     <div class="checkbox">
                                         <label for="status">
-                                            {!! Form::checkbox('completed', 1, null, ['id' => 'status']) !!} Complete
+                                            {!! Form::checkbox('completed', 1, tempTags($task)->getActiveTag('complete'), ['id' => 'status']) !!} Complete
                                         </label>
                                     </div>
                                 </div>

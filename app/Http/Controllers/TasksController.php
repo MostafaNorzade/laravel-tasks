@@ -2,18 +2,17 @@
 
 namespace App\Http\Controllers;
 
-use App\Task;
-use App\User;
 use Auth;
+use App\Task;
 use Illuminate\Http\Request;
+use Illuminate\Support\Carbon;
 
 class TasksController extends Controller
 {
     protected $rules = [
-        'name' 			      => 'required|max:60',
-        'description'   => 'max:155',
-        'completed'    	=> 'numeric',
-
+        'name' 		  => 'required|max:60',
+        'description' => 'max:155',
+        'completed'   => 'numeric',
     ];
 
     /**
@@ -36,51 +35,9 @@ class TasksController extends Controller
         $user = Auth::user();
 
         return view('tasks.index', [
-            'tasks'           => Task::orderBy('created_at', 'asc')->where('user_id', $user->id)->get(),
-            'tasksInComplete' => Task::orderBy('created_at', 'asc')->where('user_id', $user->id)->where('completed', '0')->get(),
-            'tasksComplete'   => Task::orderBy('created_at', 'asc')->where('user_id', $user->id)->where('completed', '1')->get(),
-        ]);
-    }
-
-    /**
-     * Display a listing of the resource.
-     *
-     * @return \Illuminate\Http\Response
-     */
-    public function index_all()
-    {
-        $user = Auth::user();
-
-        return view('tasks.filtered', [
-            'tasks' => Task::orderBy('created_at', 'asc')->where('user_id', $user->id)->get(),
-        ]);
-    }
-
-    /**
-     * Display a listing of the resource.
-     *
-     * @return \Illuminate\Http\Response
-     */
-    public function index_incomplete()
-    {
-        $user = Auth::user();
-
-        return view('tasks.filtered', [
-            'tasks' => Task::orderBy('created_at', 'asc')->where('user_id', $user->id)->where('completed', '0')->get(),
-        ]);
-    }
-
-    /**
-     * Display a listing of the resource.
-     *
-     * @return \Illuminate\Http\Response
-     */
-    public function index_complete()
-    {
-        $user = Auth::user();
-
-        return view('tasks.filtered', [
-            'tasks' => Task::orderBy('created_at', 'asc')->where('user_id', $user->id)->where('completed', '1')->get(),
+            'tasks' => $this->tasksOfUser($user)->get(),
+            'tasksComplete' => $this->tasksOfUser($user)->hasActiveTempTags('complete')->get(),
+            'tasksInComplete' => $this->tasksOfUser($user)->hasNotActiveTempTags('complete')->get(),
         ]);
     }
 
@@ -104,10 +61,9 @@ class TasksController extends Controller
     public function store(Request $request)
     {
         $this->validate($request, $this->rules);
-        $user = Auth::user();
         $task = $request->all();
-        $task['user_id'] = $user->id;
-        Task::create($task);
+        $task['user_id'] = Auth::id();
+        Task::query()->create($task);
 
         return redirect('/tasks')->with('success', 'Task created');
     }
@@ -134,15 +90,13 @@ class TasksController extends Controller
      *
      * @return \Illuminate\Http\Response
      */
-    public function update(Task $task, Request $request, $id)
+    public function update(Request $request, $id)
     {
         $this->validate($request, $this->rules);
 
-        $task = Task::findOrFail($id);
-        $task->name = $request->input('name');
-        $task->description = $request->input('description');
-        $task->completed = $request->input('completed');
-        $task->save();
+        $task = $this->saveTask($id, $request);
+
+        $this->tagTaskCompletion(request('completed'), $task);
 
         return redirect('tasks')->with('success', 'Task Updated');
     }
@@ -156,8 +110,32 @@ class TasksController extends Controller
      */
     public function destroy($id)
     {
-        Task::findOrFail($id)->delete();
+        Task::query()->findOrFail($id)->delete();
 
         return redirect('/tasks')->with('success', 'Task Deleted');
+    }
+
+    private function tasksOfUser($user)
+    {
+        return Task::query()->orderBy('created_at', 'asc')->where('user_id', $user->id);
+    }
+
+    private function saveTask(int $id, Request $request)
+    {
+        $task = Task::query()->findOrFail($id);
+        $task->name = $request->input('name');
+        $task->description = $request->input('description');
+        $task->save();
+
+        return $task;
+    }
+
+    private function tagTaskCompletion($completion, $task): void
+    {
+        if ($completion == '1') {
+            tempTags($task)->tagIt('complete', Carbon::tomorrow()->startOfDay());
+        } else {
+            tempTags($task)->unTag('complete');
+        }
     }
 }
