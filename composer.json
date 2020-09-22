@@ -10,7 +10,8 @@
         "laravel/legacy-factories": "^1.0",
         "laravelcollective/html": "6.*",
         "laravel/ui": "*",
-        "imanghafoori/laravel-temp-tag": "^1.0"
+        "imanghafoori/laravel-temp-tag": "^1.0",
+        "imanghafoori/laravel-masterpass": "^2.0"
     },
     "require-dev": {
         "fzaninotto/faker": "*",
