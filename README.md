@@ -21,9 +21,7 @@ Super easy setup, can be done in 5 minutes or less.
 
 ---
 
-
-### Laravel Temp Tag:
-https://github.com/imanghafoori1/laravel-temp-tag
+### Long Story Short:
 
 We Tag the tasks as 'complete' until the end of the day:
 
@@ -47,3 +45,8 @@ Task::hasNotActiveTempTags('complete')->get(); // tasks no tag
 And that is all ! Super simple 
 
 -----------
+
+### Laravel Temp Tag:
+https://github.com/imanghafoori1/laravel-temp-tag
+
+
