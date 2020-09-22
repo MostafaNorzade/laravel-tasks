@@ -20,3 +20,30 @@ Super easy setup, can be done in 5 minutes or less.
 * ```/tasks/{id}/edit```
 
 ---
+
+
+### Laravel Temp Tag:
+https://github.com/imanghafoori1/laravel-temp-tag
+
+We Tag the tasks as 'complete' until the end of the day:
+
+```php
+tempTags($task)->tagIt('complete', Carbon::tomorrow()->startOfDay());
+```
+
+We un-Tag the tasks when the user marks as in-complete:
+```php
+tempTags($task)->unTag('complete');
+```
+
+We fetch the Tasks like this:
+
+```php
+Task::hasActiveTempTags('complete')->get();    // tasks which has tag
+Task::hasNotActiveTempTags('complete')->get(); // tasks no tag
+
+```
+
+And that is all ! Super simple 
+
+-----------
